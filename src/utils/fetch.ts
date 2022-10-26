@@ -1,17 +1,19 @@
 import {useEffect, useState} from 'react';
 import axios from 'axios';
-import {Simpson} from '../Types/types';
+import {addNewCharacter} from '../redux/CharacterReducer';
+import {useDispatch} from 'react-redux';
 
 function useFetch(url: string) {
-  const [fetchData, setFetchData] = useState<Simpson[]>();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+
   useEffect(() => {
     setLoading(true);
     axios
       .get(url)
       .then(response => {
-        setFetchData(response.data);
+        dispatch(addNewCharacter(response.data));
       })
       .catch(error => {
         setError(error);
@@ -21,6 +23,6 @@ function useFetch(url: string) {
       });
   }, [url]);
 
-  return {fetchData, loading, error};
+  return {loading, error};
 }
 export default useFetch;

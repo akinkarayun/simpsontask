@@ -2,7 +2,7 @@ import {createSlice} from '@reduxjs/toolkit';
 
 export const characterSlice = createSlice({
   name: 'characters',
-  initialState: {value: [] as any},
+  initialState: {value: []},
   reducers: {
     addNewCharacter: (state, action) => {
       state.value.push(action.payload);

@@ -11,8 +11,7 @@ import {
 } from 'react-native';
 import {Simpson} from '../Types/types';
 import useFetch from '../utils/fetch';
-import {addNewCharacter} from '../redux/CharacterReducer';
-import {useDispatch, useSelector} from 'react-redux';
+import {useSelector} from 'react-redux';
 
 interface CharacterListProps {}
 
@@ -21,24 +20,20 @@ const URL = 'https://5fc9346b2af77700165ae514.mockapi.io/simpsons';
 const {width} = Dimensions.get('window');
 
 export const CharacterList: React.FC<CharacterListProps> = ({}) => {
-  const {fetchData, loading, error} = useFetch(URL);
-  const dispatch = useDispatch();
+  const {loading, error} = useFetch(URL);
   const navigation = useNavigation<any>();
   const characterList = useSelector(state => state.character.value);
-  React.useEffect(() => {
-    dispatch(addNewCharacter(fetchData));
-  }, []);
-
+  const flatData = characterList.flat();
   if (loading) {
     return (
-      <View>
+      <View style={styles.center}>
         <Text>LOADING...</Text>
       </View>
     );
   }
   if (error) {
     return (
-      <View>
+      <View style={styles.center}>
         <Text>ERROR</Text>
       </View>
     );
@@ -72,19 +67,28 @@ export const CharacterList: React.FC<CharacterListProps> = ({}) => {
         maxToRenderPerBatch={5}
         initialNumToRender={5}
         windowSize={1}
-        data={characterList[0]}
+        data={flatData}
         renderItem={renderItem}
         keyExtractor={(_, index) => index.toString()}
       />
       <Pressable
         style={styles.container}
-        onPress={() => navigation.navigate('AddNewCharacter')}>
+        onPress={() => {
+          navigation.navigate('AddNewCharacter', {
+            params: flatData.length,
+          });
+        }}>
         <Text style={styles.title}>+</Text>
       </Pressable>
     </>
   );
 };
 const styles = StyleSheet.create({
+  center: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   flatlist: {
     backgroundColor: 'white',
   },

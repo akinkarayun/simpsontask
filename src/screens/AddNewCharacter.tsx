@@ -3,17 +3,35 @@ import {View, Text, TextInput, Pressable, StyleSheet} from 'react-native';
 import {Formik} from 'formik';
 import * as yup from 'yup';
 import {useNavigation} from '@react-navigation/native';
+import {addNewCharacter} from '../redux/CharacterReducer';
+import {useDispatch} from 'react-redux';
 
 interface AddNewCharacterProps {}
 
-export const AddNewCharacter: React.FC<AddNewCharacterProps> = ({}) => {
+export const AddNewCharacter: React.FC<AddNewCharacterProps> = (route: any) => {
+  const {params} = route.route.params;
+
+  console.log(params);
+
   const jobTitleNumberRef = React.createRef<TextInput>();
   const aboutRef = React.createRef<TextInput>();
   const imageLink = React.createRef<TextInput>();
 
   const navigation = useNavigation<any>();
+  const dispatch = useDispatch();
 
-  const onAddNewCharacter = () => {};
+  const onAddNewCharacter = (values: any) => {
+    dispatch(
+      addNewCharacter({
+        id: params + 1,
+        name: values.name,
+        job: values.job,
+        description: values.description,
+        avatar: values.avatar,
+      }),
+    );
+    navigation.goBack();
+  };
   return (
     <View style={styles.mainWrapper}>
       <Formik
@@ -28,6 +46,7 @@ export const AddNewCharacter: React.FC<AddNewCharacterProps> = ({}) => {
           name: yup.string().required('Gerekli'),
           job: yup.string().required('Gerekli'),
           description: yup.string().required('Gerekli'),
+          avatar: yup.string().required('Gerekli'),
         })}>
         {({
           values,
