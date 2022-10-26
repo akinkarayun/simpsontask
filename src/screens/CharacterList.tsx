@@ -12,7 +12,7 @@ import {
 import {Simpson} from '../Types/types';
 import useFetch from '../utils/fetch';
 import {useDispatch, useSelector} from 'react-redux';
-import {deleteCharacter} from '../redux/CharacterReducer';
+import {deleteCharacter, updateLocation} from '../redux/CharacterReducer';
 
 interface CharacterListProps {}
 
@@ -40,7 +40,16 @@ export const CharacterList: React.FC<CharacterListProps> = ({}) => {
       </View>
     );
   }
-  // console.log(flatData);
+  const shiftDownIndex = (index: number) => {
+    const x = flatData[index];
+    const y = flatData[index + 1];
+    dispatch(updateLocation({x, y}));
+  };
+  const shiftUpIndex = (index: number) => {
+    const x = flatData[index];
+    const y = flatData[index - 1];
+    dispatch(updateLocation({x, y}));
+  };
   function renderItem({item, index}: {item: Simpson; index: number}) {
     return (
       <>
@@ -56,16 +65,29 @@ export const CharacterList: React.FC<CharacterListProps> = ({}) => {
           <Image
             resizeMode="contain"
             style={styles.image}
-            source={{uri: item.avatar}}
+            source={{uri: item?.avatar}}
           />
-          <Text style={styles.text}>{item.name}</Text>
-          <Pressable
-            style={styles.deleteButton}
-            onPress={() => {
-              dispatch(deleteCharacter({id: item.id}));
-            }}>
-            <Text style={styles.trash}>🗑️</Text>
-          </Pressable>
+          <Text style={styles.text}>{item?.name}</Text>
+          <View style={styles.containerbuttons}>
+            <Pressable
+              onPress={() => {
+                dispatch(deleteCharacter({id: item.id}));
+              }}>
+              <Text style={styles.trash}>🗑️</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => {
+                shiftDownIndex(index);
+              }}>
+              <Text style={[styles.trash]}>⬇️</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => {
+                shiftUpIndex(index);
+              }}>
+              <Text style={styles.trash}>⬆️</Text>
+            </Pressable>
+          </View>
         </Pressable>
       </>
     );
@@ -131,15 +153,16 @@ const styles = StyleSheet.create({
     width: 55,
     backgroundColor: 'white',
   },
-  deleteButton: {
+  containerbuttons: {
     height: 30,
-    width: 25,
     flex: 1,
     alignItems: 'flex-end',
+    flexDirection: 'row-reverse',
   },
   trash: {
-    right: 20,
+    right: 10,
     fontSize: 20,
+    paddingEnd: 5,
   },
   container: {
     justifyContent: 'center',
