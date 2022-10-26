@@ -1,6 +1,5 @@
 import React from 'react';
 import {View, Text, TextInput, Pressable, StyleSheet} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Formik} from 'formik';
 import * as yup from 'yup';
 import {useNavigation} from '@react-navigation/native';
@@ -12,15 +11,9 @@ export const AddNewCharacter: React.FC<AddNewCharacterProps> = ({}) => {
   const aboutRef = React.createRef<TextInput>();
   const imageLink = React.createRef<TextInput>();
 
-  // const navigation = useNavigation<any>();
+  const navigation = useNavigation<any>();
 
-  const onAddNewCharacter = async (values: any) => {
-    try {
-      await AsyncStorage.setItem('values', values);
-    } catch (e) {
-      console.log(e);
-    }
-  };
+  const onAddNewCharacter = () => {};
   return (
     <View style={styles.mainWrapper}>
       <Formik
@@ -32,9 +25,9 @@ export const AddNewCharacter: React.FC<AddNewCharacterProps> = ({}) => {
         }}
         onSubmit={onAddNewCharacter}
         validationSchema={yup.object().shape({
-          name_surname: yup.string().required('Gerekli'),
-          job_title: yup.string().required('Gerekli'),
-          about: yup.string().required('Gerekli'),
+          name: yup.string().required('Gerekli'),
+          job: yup.string().required('Gerekli'),
+          description: yup.string().required('Gerekli'),
         })}>
         {({
           values,
