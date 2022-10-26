@@ -1,5 +1,5 @@
+import React from 'react';
 import {useNavigation} from '@react-navigation/native';
-import React, {useMemo, useState} from 'react';
 import {
   View,
   Text,
@@ -11,7 +11,8 @@ import {
 } from 'react-native';
 import {Simpson} from '../Types/types';
 import useFetch from '../utils/fetch';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {addNewCharacter} from '../redux/CharacterReducer';
+import {useDispatch, useSelector} from 'react-redux';
 
 interface CharacterListProps {}
 
@@ -21,18 +22,12 @@ const {width} = Dimensions.get('window');
 
 export const CharacterList: React.FC<CharacterListProps> = ({}) => {
   const {fetchData, loading, error} = useFetch(URL);
+  const dispatch = useDispatch();
   const navigation = useNavigation<any>();
-  // const [newData, setNewData] = useState([]);
-  // AsyncStorage.removeItem('values');
-
-  // const getValues = async () => {
-  //   // console.log(localData);
-  //   // const x = [fetchData, localData];
-  //   setNewData(x);
-  // };
-  // React.useEffect(() => {
-  //   getValues();
-  // }, []);
+  const characterList = useSelector(state => state.character.value);
+  React.useEffect(() => {
+    dispatch(addNewCharacter(fetchData));
+  }, []);
 
   if (loading) {
     return (
@@ -62,9 +57,9 @@ export const CharacterList: React.FC<CharacterListProps> = ({}) => {
         <Image
           resizeMode="contain"
           style={styles.image}
-          source={{uri: item.avatar}}
+          source={{uri: item?.avatar}}
         />
-        <Text style={styles.text}>{item.name}</Text>
+        <Text style={styles.text}>{item?.name}</Text>
       </Pressable>
     );
   }
@@ -77,7 +72,7 @@ export const CharacterList: React.FC<CharacterListProps> = ({}) => {
         maxToRenderPerBatch={5}
         initialNumToRender={5}
         windowSize={1}
-        data={fetchData}
+        data={characterList[0]}
         renderItem={renderItem}
         keyExtractor={(_, index) => index.toString()}
       />
