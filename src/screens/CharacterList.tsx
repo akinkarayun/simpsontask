@@ -11,7 +11,8 @@ import {
 } from 'react-native';
 import {Simpson} from '../Types/types';
 import useFetch from '../utils/fetch';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import {deleteCharacter} from '../redux/CharacterReducer';
 
 interface CharacterListProps {}
 
@@ -22,6 +23,7 @@ const {width} = Dimensions.get('window');
 export const CharacterList: React.FC<CharacterListProps> = ({}) => {
   const {loading, error} = useFetch(URL);
   const navigation = useNavigation<any>();
+  const dispatch = useDispatch();
   const characterList = useSelector(state => state.character.value);
   const flatData = characterList.flat();
   if (loading) {
@@ -38,24 +40,34 @@ export const CharacterList: React.FC<CharacterListProps> = ({}) => {
       </View>
     );
   }
+  // console.log(flatData);
   function renderItem({item, index}: {item: Simpson; index: number}) {
     return (
-      <Pressable
-        style={styles.listItem}
-        key={index}
-        onPress={() => {
-          navigation.navigate('SimpsonDetails', {
-            params: item,
-          });
-        }}>
-        <Text style={styles.text}>{index + 1}</Text>
-        <Image
-          resizeMode="contain"
-          style={styles.image}
-          source={{uri: item?.avatar}}
-        />
-        <Text style={styles.text}>{item?.name}</Text>
-      </Pressable>
+      <>
+        <Pressable
+          style={styles.listItem}
+          key={index}
+          onPress={() => {
+            navigation.navigate('SimpsonDetails', {
+              params: item,
+            });
+          }}>
+          <Text style={styles.text}>{index + 1}</Text>
+          <Image
+            resizeMode="contain"
+            style={styles.image}
+            source={{uri: item.avatar}}
+          />
+          <Text style={styles.text}>{item.name}</Text>
+          <Pressable
+            style={styles.deleteButton}
+            onPress={() => {
+              dispatch(deleteCharacter({id: item.id}));
+            }}>
+            <Text style={styles.trash}>🗑️</Text>
+          </Pressable>
+        </Pressable>
+      </>
     );
   }
 
@@ -118,6 +130,16 @@ const styles = StyleSheet.create({
     height: 60,
     width: 55,
     backgroundColor: 'white',
+  },
+  deleteButton: {
+    height: 30,
+    width: 25,
+    flex: 1,
+    alignItems: 'flex-end',
+  },
+  trash: {
+    right: 20,
+    fontSize: 20,
   },
   container: {
     justifyContent: 'center',
